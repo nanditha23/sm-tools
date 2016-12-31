@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pathset enabled="true"> 
+	<thread_pool size="59" />
+	<private_pathset enabled="true" mode="normal"> 
+		<od_source table="routechoice.pvtod1" />
+		<bulk_generation_output_file name="pvt-pathset_1.csv" />
+		<tables default_traveltime="supply.link_default_travel_time" historical_traveltime="supply.link_travel_time" pathset_table="pvt_path_extcbd" />
+		<functions pathset="get_pvt_pathset_extcbd" pathset_without_banned_area="get_path_set_woba" travel_time="upsert_realtime" />
+		<recursive_pathset_generation value="false" />
+		<reroute enabled="false" />
+		<utility_parameters>
+            <highwayBias value="2.475" />
+        </utility_parameters>
+        <path_generators max_segment_speed="26.39">  
+            <k_shortest_path level="5" />
+            <link_elimination types="default,highway" />    
+            <random_perturbation iterations="100" modes="time" uniform_range="1,100" /> 
+        </path_generators>
+        <model_scripts format="lua" path="scripts/lua/mid/behavior-models/">
+            <script file="logit.lua" name="logit" /> 
+            <script file="pvtrc.lua" name="pvtrc" /> 
+        </model_scripts>
+	</private_pathset>
+	
+	<public_pathset enabled="false" mode="normal"> 
+		<od_source table="routechoice.pt_od" />  
+		<bulk_generation_output_file name="pt-pathset.csv" />
+		<pathset_generation_algorithms> 
+			<k_shortest_path level="10" />
+			<simulation_approach iterations="10" /> 
+		</pathset_generation_algorithms>
+		<model_scripts format="lua" path="scripts/lua/mid/behavior-models/">
+			<script file="logit.lua" name="logit" /> 
+			<script file="ptrc.lua" name="ptrc" /> 
+		</model_scripts>
+	</public_pathset>
+</pathset>

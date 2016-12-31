@@ -1,0 +1,12 @@
+﻿TRUNCATE table demand.temp_subtrips_shortterm_calibration_plus_simon;
+TRUNCATE table demand.temp_subtrips_shortterm_calibration_minus_simon;
+TRUNCATE table demand.temp_subtrips_shortterm_calibration_spsa_simon;
+TRUNCATE table demand.temp_trips_activities_shortterm_calibration_plus_simon;
+TRUNCATE table demand.temp_trips_activities_shortterm_calibration_minus_simon;
+TRUNCATE table demand.temp_trips_activities_shortterm_calibration_spsa_simon;
+UPDATE demand.trips_activities_plus_simon SET load_factor=1;
+UPDATE demand.subtrips_plus_simon SET load_factor=1;
+UPDATE demand.trips_activities_minus_simon SET load_factor=1;
+UPDATE demand.subtrips_minus_simon SET load_factor=1;
+UPDATE demand.trips_activities_spsa_simon SET load_factor=1;
+UPDATE demand.subtrips_spsa_simon SET load_factor=1;

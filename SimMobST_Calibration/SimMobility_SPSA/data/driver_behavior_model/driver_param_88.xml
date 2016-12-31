@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<parameters model_name="general_driver_model">
+
+
+
+	
+	
+	
+	
+
+	<param name="min_response_distance" value="5.8618" />
+	
+	
+		
+	
+	 
+	 
+	
+	
+	
+
+	
+									
+	<param name="CF_parameters_1" value="0.037975 0.31101 0.2255 0.5702 0.56522 0.0" />
+	<param name="CF_parameters_2" value="-0.052704 0 0.4023 0.81991 0.67522 0.0" />
+	
+	
+															
+	
+	<param name="Car_following_acceleration_add_on" value="  -1.7945 -1.1307 -0.7358 -0.4203 -0.1370 0.1370 0.4203 0.7358 1.1307 1.7945" />
+	
+	<param name="Car_following_deceleration_add_on" value="  -0.8092 -0.5099 -0.3318 -0.1895 -0.0618 0.0618 0.1895 0.3318 0.5099 0.8092" />
+
+	
+
+
+	
+	
+	
+	
+
+	<param name="FF_Acc_Params_b0" value="10.0" />
+	<param name="FF_Acc_Params_b2" value="0.076512" />
+	<param name="FF_Acc_Params_stddev" value="1.15" />
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	<param name="speed_factor" value="1.3076" />
+	
+	
+										
+	<param name="speed_limit_add_on" value="-0.3125 -0.1969 -0.1281 -0.0732 -0.0238 0.0238 0.0732 0.1281 0.1969 0.3125" />
+
+	
+	
+
+	
+		
+	
+	
+											
+	<param name="target_gap_acc_parm" value="0.51332 0.31934 0.48727 0.034593 0.11373 0.28418 -0.45856 -0.25161 0.077782 0.153 0.9293 0.08072 0.36716" />
+	
+	 
+	
+	
+	<param name="max_acc_car1" value="6.6 5.1623 4.9579 4.8012 3.8122" />
+	
+	<param name="normal_deceleration_car1" value="-2.25 -2.475 -2.2 -1.7266 -1.6374" />
+	
+	<param name="max_deceleration_car1" value="-8.1 -7.65 -8.6202 -7.9102 -7.054" />
+
+	
+												
+	<param name="max_acceleration_scale" value="0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20" />
+	<param name="normal_deceleration_scale" value="0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20" />
+	<param name="max_deceleration_scale" value="0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20" />
+	
+	
+		
+	<param name="speed_scaler" value="5 10 5" />
+	
+	<param name="acceleration_grade_factor" value="1" />
+	
+	<param name="tmp_all_grades" value="0" />
+
+	
+
+
+	
+	
+  <param name="hbuffer_lower" value="0.92606" />
+  
+	
+	
+											
+	
+	
+	
+	
+	
+	<param name="hbuffer_Upper" value="2.0332 2.3196 2.4914 2.606 2.7492 2.8637 2.9782 3.1214 3.2933 3.5796" />
+
+
+	<param name="yellow_stop_headway" value="0.96755" />	
+	<param name="min_speed_yellow" value="2.4587" />	
+	<param name="driver_signal_perception_distance" value="165" /> 
+
+
+														
+	
+	
+	
+
+	
+	
+
+	<param name="dec_update_step_size" value="0.36 0.10 0.25 1.05 0.0" />
+	<param name="acc_update_step_size" value="0.45 0.10 0.30 1.55 0.0" />
+	<param name="uniform_speed_update_step_size" value="0.45 0.10 0.30 1.55 0.0" />
+	<param name="stopped_vehicle_update_step_size" value="0.36 0.10 0.25 1.05 0.0" />
+
+
+
+	<param name="visibility_distance" value="10" />
+
+
+
+                                   
+	<param name="MLC_PARAMETERS" value="1000 859.6373 2" />
+	
+	
+
+
+	
+	
+	
+	
+	
+	
+	<param name="lane_utility_model" value="2.5104 0.31973 -0.75 0 0.03 -0.67606 0.0097037 -0.35 -0.0056575 -3.2015 5.8069 15 -3.268 -4.5295 -1.4837 -0.75 -0.64696 -0.22781" />
+
+
+
+									
+	<param name="LC_GAP_MODELS_0" value="1.00, 0.0, 0.000, 0.508, 0.000, 0.000, -0.420, 0.000, 0.488" />
+	<param name="LC_GAP_MODELS_1" value="1.00, 0.0, 0.000, 2.020, 0.000, 0.000, 0.153, 0.188, 0.526" />
+	<param name="LC_GAP_MODELS_2" value="1.00, 0.0, 0.000, 0.384, 0.000, 0.000, 0.000, 0.000, 0.859" />
+	<param name="LC_GAP_MODELS_3" value="1.00, 0.0, 0.000, 0.587, 0.000, 0.000, 0.048, 0.356, 1.073" />
+	<param name="LC_GAP_MODELS_4" value="0.60, 0.0, 0.000, 0.384, 0.000, 0.000, 0.000, 0.000, 0.859" />
+	<param name="LC_GAP_MODELS_5" value="0.60, 0.0, 0.000, 0.587, 0.000, 0.000, 0.048, 0.356, 1.073" />
+	<param name="LC_GAP_MODELS_6" value="0.20, 0.0, 0.000, 0.384, 0.000, 0.000, 0.000, 0.000, 0.859" />
+	<param name="LC_GAP_MODELS_7" value="0.20, 0.0, 0.000, 0.587, 0.000, 0.000, 0.048, 0.356, 1.073" />
+
+	<param name="critical_gaps_param" value="0.53324 -0.35 -4 0.85063 1.4593 0 0.65451 0.86263 0.81287" />
+
+	
+	<param name="Target_Gap_Model" value="-0.80058 0.85409 0.77236 -1.2004 -2.1537 -1.6403" />
+
+
+									
+	<param name="GAP_PARAM_0" value="-1.23, -0.482, 0.224, -0.0179, 2.10, 0.239" />   #back
+	<param name="GAP_PARAM_1" value="0.00, 0.00, 0.224, -0.0179, 2.10, 0.000" />   #adj
+	<param name="GAP_PARAM_2" value="-0.772, -0.482, 0.224, -0.0179, 2.10, 0.675" />   #fwd
+
+
+
+	<param name="nosing_param" value="0.94341 0.51553 0.54716 0.09 0.45 0.91932 33 90 540 36" />
+	
+
+
+
+	<param name="kazi_nosing_param" value="-3.159 0.313 -0.027 2.050 0.028 0.6" />
+
+	
+	<param name="CF_CRITICAL_TIMER_RATIO" value="0.45" />
+
+	
+	<param name="LC_Yielding_Model" value="0.80 1.00" />
+	
+	
+	
+	<param name="MLC_Yielding_Probabilities" value="0.13 0.71 0.13 0.03" />
+	
+
+	
+	
+	<param name="intersection_attentiveness_factor_min" value="0.29809" />
+	<param name="intersection_attentivneess_factor_max" value="0.55156" />
+	
+	
+	<param name="minimum_gap" value="1.125" />
+	
+	
+										
+	<param name="critical_gap_addon" value="0.96835 0.47044 0.5" />
+	
+	
+	<param name="impatience_factor" value="0.22" />
+	
+	
+	
+	
+	<param name="tailgate_separation_time" value="1" />
+	
+	
+	<param name="conflict_separation_time" value="2.46" />	
+	
+	
+	
+	<param name="min_speed" value="0.1" />  
+	
+	
+	<param name="LC_Discretionary_Lane_Change_Model_MinTimeInLaneSameDir" value="7.7" /> 
+	<param name="LC_Discretionary_Lane_Change_Model_MinTimeInLaneDiffDir" value="16.5" /> 
+
+	
+	<param name="check_stop_point_distance" value="200" /> 
+
+	
+	<param name="density" value="0.0" /> 
+	
+</parameters>

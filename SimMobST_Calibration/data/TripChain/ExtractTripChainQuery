@@ -1,0 +1,4 @@
+﻿SELECT * from get_trip_chains_extcbd(
+    '10:00:00',
+    '11:00:00'
+);

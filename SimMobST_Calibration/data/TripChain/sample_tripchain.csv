@@ -1,0 +1,2 @@
+trip_id;person_id;trip_start_time;activity_start_time;activity_end_time;origin_type;destination_type;origin_id;destination_id;load_factor;sequence_num;travel_mode;pt_line_id;cbd_traverse_type;subtrip_origin_type;subtrip_destination_type;subtrip_origin_id;subtrip_destination_id
+2718210-1_1;2718210-1;08:00:00;09:15:00;19:59:00;1;1;16657;16518;1;1;Car;;2;1;1;16657;16518
