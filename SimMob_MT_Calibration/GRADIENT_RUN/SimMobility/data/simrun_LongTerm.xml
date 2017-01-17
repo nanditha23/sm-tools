@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright Singapore-MIT Alliance for Research and Technology -->
+
+<config>
+    <!-- Anything in the "constructs" section is created with an ID and some structure (e.g., an object) -->
+    <!-- The idea here is to allow re-using some common settings in multiple places, and to allow multiple optional -->
+    <!-- items (e.g. database connections), without having to comment out the ones which are not used. -->
+    <!-- Key to the idea of a construct is that if it is incorrectly specified, it is only considered to be an error if -->
+    <!-- it is USED. In other words, the parser will flag it as an error, but pend that error until the construct is requested. -->
+    <!-- A construct ID must be unique for its type (databases, credentials, etc.) -->
+    <!-- Note that constructs can be defined and used out-of-order, since their IDs are only resolved once they are retrieved. -->
+    <constructs>  
+        <!-- Various database connections, used for loading network and agent data. -->
+        <!-- Note that credentials (login details) are stored in a separate construct. -->
+        <databases>
+            <database id="fm_local_lt" dbtype="postgres">
+                <host value="localhost"/>
+                <port value="5432"/>
+                <dbname value="sim_mob_lt"/>
+            </database>
+            
+	    <!-- internal ip for remote midterm server -->
+            <database id="fm_remote_mt" dbtype="postgres">
+                <host value="172.25.184.48"/>
+                <port value="5432"/>
+                <dbname value="simmobility"/>
+            </database>
+
+	    <!-- hpc ip for remote midterm server -->
+            <database id="fm_remote_mt6" dbtype="postgres">
+                <host value="172.25.184.156"/>
+                <port value="5432"/>
+                <dbname value="simmobility"/>
+            </database>
+
+            <!-- localhost for midterm server -->
+            <database id="fm_remote_mt2" dbtype="postgres">
+                <host value="localhost"/>
+                <port value="5432"/>
+                <dbname value="sim_mob_lt"/>
+            </database>
+
+		<!-- public ip for remote midterm server -->
+	    <database id="fm_remote_mt3" dbtype="postgres">
+	        <host value="137.132.22.82"/>
+	        <port value="15061"/> <!--old port: 15025 -->
+	        <dbname value="simmobility"/>
+	    </database>
+
+		<!-- public ip for remote midterm server -->
+	    <database id="fm_remote_mt4" dbtype="postgres">
+	        <host value="fmhpchead"/>
+	        <port value="5432"/> <!--old port: 15025 -->
+	        <dbname value="Simmobility"/>
+	    </database>
+
+		<!-- longterm localhost server hosting midterm data -->
+	    <database id="fm_remote_mt5" dbtype="postgres">
+	        <host value="172.25.184.14"/>
+	        <port value="5432"/>
+	        <dbname value="sim_mob_lt"/>
+	    </database>
+
+	 </databases>
+    
+	<!-- Groupings of stored procedures, used for loading network data from certain tables. -->
+	<db_proc_groups/>
+
+	<!-- Login credentials to be used for database connections. These can be plaintext, -->
+	<!-- file-based, and possibly even signed. Note that invalid credentials will simply be ignored. -->
+	<credentials>
+	<!-- A file-based credential loads credentials from a JSON file with its own special format. -->
+	<!-- Multiple files can be listed, and they will be tried in order until one is found. -->
+	<!-- If the first existing file has an error, parsing will NOT continue to the next file. -->
+	<!-- The actual credentials file looks something like this: -->
+	<!-- 
+	{
+	    "username" : "postgres",
+	    "password" : "AbCdEfG=",
+	    "algorithm" : ["clear","xor23","base64","cipher"]
+	}
+	-->
+
+	<file-based-credential id="fm_remote_mt">
+	 <file path="private/fm_remote.cred"/> 
+	  <!--   <file path="private/fm_local.cred"/>-->
+	</file-based-credential>
+
+	<plaintext-credential id="LT_cred">
+	    <username value="postgres"/>
+	    <password value="postgres"/>
+	</plaintext-credential>
+	</credentials>
+    </constructs>
+
+
+              
+    <!-- Long Term Configurations parameters -->
+    <longTermParams enabled ="true">
+    	<days value="365"/>
+    	<maxIterations value="1"/>
+    	<workers value="8"/>
+    	<tickStep value="1"/>  
+	<year value = "2012" />  
+	<simulationScenario value="baseline"/> 
+	<resume value ="false"/> 
+	<currentOutputSchema value = "baseline_2012_20160225034344"/> <!--if resume is true give the current op schema name-->
+	<mainSchemaVersion value="main2012" />
+	<configSchemaVersion value = "configuration2012" />
+	<calibrationSchemaVersion value= "calibration2012" />
+	<geometrySchemaVersion value = "geometry2012" />
+        <opSchemaloadingInterval value = "365"/>
+    	<developerModel enabled="true">
+    		<timeInterval value="30"/>
+		<InitialPostcode value = "1000000"/>
+		<initialBuildingId value = "300000" />
+		<initialUnitId value = "2000000" />
+		<initialProjectId value = "200000" />
+		<minLotSize value = "100.00" />
+    	</developerModel>
+	<outputHouseholdLogsums enabled="false">
+	    <vehicleOwnershipLogsum value ="true"/>
+	    <fixedHomeVariableWork value ="false"/>
+	    <fixedWorkVariableHome value ="false"/>
+	</outputHouseholdLogsums>
+    	<housingModel enabled="true"> 	    
+            <timeOnMarket value="90"/>
+            <timeOffMarket value="150"/>
+            <timeInterval value="7"/>
+	    <awakeningModel enabled="true">
+		    <initialHouseholdsOnMarket value="15000"/>
+		    <dailyHouseholdAwakenings value="400"/>
+		    <awakenModelShan value="false"/>
+		    <awakenModelRandom value="true"/>
+		    <awakenModelJingsi value="false"/>		
+	    </awakeningModel>
+	    <vacantUnitActivationProbability value="0.375"/>
+	    <housingMarketSearchPercentage value="0.15"/>
+	    <housingMoveInDaysInterval value="30"/>
+	    <offsetBetweenUnitBuyingAndSelling value ="7"/>
+	    <bidderUnitsChoiceSet value = "50"/>
+	    <bidderBTOUnitsChoiceSet value = "12"/>
+	    <householdBiddingWindow value = "30" />
+	    <householdAwakeningPercentageByBTO value = "0.00001" />
+        </housingModel>
+	<vehicleOwnershipModel enabled='false'>
+		<vehicleBuyingWaitingTimeInDays value= "1"/>
+	</vehicleOwnershipModel>
+        <taxiAccessModel enabled='false'>
+	</taxiAccessModel>
+	<schoolAssignmentModel enabled = 'false'>
+		<schoolChangeWaitingTimeInDays value ="1" />
+	</schoolAssignmentModel>
+    </longTermParams>
+
+    <model_scripts path="scripts/lua/mid/behavior-models/" format="lua">
+	<script name="logit" file="logit.lua"/> <!--The main logit code for multinomial and nested logit models-->
+	<script name="dpb" file="dpb.lua"/> <!-- Day Pattern Binary -->
+	<script name="dpt" file="dpt.lua"/> <!-- Day Pattern Tours -->
+	<script name="dps" file="dps.lua"/> <!-- Day Pattern Stops -->
+	<script name="tmw" file="tmw.lua"/> <!--Tour Mode/Destination Work -->
+	<script name="tmdw" file="tmdw.lua"/> <!--Tour Mode/Destination Work -->
+	<script name="tmds" file="tmds.lua"/> <!--Tour Mode/Destination Shopping -->
+	<script name="tmdo" file="tmdo.lua"/> <!--Tour Mode/Destination Others -->                    
+    </model_scripts>
+</config>
+
