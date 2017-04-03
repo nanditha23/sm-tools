@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 from collections import namedtuple
+import time
 
 OD_Interval = namedtuple("OD_Interval", ["origin", "destination", "interval"])
 
@@ -20,12 +21,23 @@ def get_travel_time_obs():
         od_interval_key = OD_Interval(origin=int(item[3]), destination=int(item[4]), interval=time_window)
 
         if len(item[2]) == 0:
-            item[2] = "0.0"
+            item[2] = (0.5 * float(item[1]) )** 2
+        if int(float(item[2])) == 0:
+            item[2] = (0.5 * float(item[1])) ** 2
+        if int(float(item[2])) == 0:
+            item[2] = 1.0
+        if float(item[1]) != 0.0 :
+            print od_interval_key, (float(item[1]), float(item[2]))
+            #time.sleep(1)
+
         travel_time_obs_dict[od_interval_key] = (float(item[1]), float(item[2]))
 
     return travel_time_obs_dict
 
 travel_time_obs = get_travel_time_obs()
+
+#for key in travel_time_obs:
+#    print key, travel_time_obs[key]
 
 
 # Returns the dictionary of simulated travel time from the input subtrip metrics file
@@ -37,10 +49,10 @@ def get_travel_time_sim(subtrip_metrics_file):
         time_window = get_time_window(item[8])
         od_interval_key = OD_Interval(origin=int(item[4]), destination=int(item[6]), interval=time_window)
         if temp_travel_time_sim_dict.__contains__(od_interval_key):
-            temp_travel_time_sim_dict[od_interval_key].append(float(item[10]) * 60)
+            temp_travel_time_sim_dict[od_interval_key].append(float(item[10]) * 3600)
         else:
             temp_travel_time_sim_dict[od_interval_key] = list()
-            temp_travel_time_sim_dict[od_interval_key].append(float(item[10]) * 60)
+            temp_travel_time_sim_dict[od_interval_key].append(float(item[10]) * 3600)
 
     travel_time_sim_dict = dict()
     for key, value in temp_travel_time_sim_dict.iteritems():
@@ -59,13 +71,20 @@ def generate_travel_time_vector(subtrip_metrics_file, start_time, end_time):
     obs_tt_variance_list = list()
     sim_tt_list = list()
 
-    for sim_key, sim_value in travel_time_sim.iteritems():
-        if start_time_interval <= sim_key.interval < end_time_interval:
-            if travel_time_obs.__contains__(sim_key):
-                obs_value = travel_time_obs[sim_key]
-                obs_tt_list.append(obs_value[0])
-                obs_tt_variance_list.append(obs_value[1])
+    for obs_key, obs_value in travel_time_obs.iteritems():
+        if start_time_interval <= obs_key.interval < end_time_interval:
+            if travel_time_sim.__contains__(obs_key):
+                sim_value = travel_time_sim[obs_key]
                 sim_tt_list.append(sim_value)
+                obs_tt_variance_list.append(obs_value[1])
+                obs_tt_list.append(obs_value[0])
+            else:
+                simulatedVal = 0
+                observedVal = 0
+                observedVariance = 1
+                sim_tt_list.append(simulatedVal)
+                obs_tt_variance_list.append(observedVariance)
+                obs_tt_list.append(observedVal)
 
     return np.array(sim_tt_list), np.array(obs_tt_list), np.array(obs_tt_variance_list)
 
@@ -74,4 +93,5 @@ def generate_travel_time_vector(subtrip_metrics_file, start_time, end_time):
 
     with open("test_tt.csv", "w") as fp:
         writer = csv.writer(fp)
-        writer.writerows(travel_time_vector)'''
+        writer.writerows(travel_time_vectoar)
+'''

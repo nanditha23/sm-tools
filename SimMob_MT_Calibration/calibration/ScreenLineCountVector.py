@@ -43,8 +43,11 @@ def generate_screen_line_vector(sim_screen_line_file, start_time, end_time):
 	for item in screen_line_count_real:
 		interval = int(item[1])
 		value_mean = int(item[3])
-		value_variance = float(item[4])
-
+		if int(float(item[4])) == 0:
+			value_variance = 1.0
+		else: 
+			value_variance = float(item[4])
+		
 		if interval < start_interval or interval > end_interval:
 			continue
 

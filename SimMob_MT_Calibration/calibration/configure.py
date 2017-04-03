@@ -5,6 +5,7 @@ import re
 import collections
 import numpy as np # Added Vishnu for Bernoulli random number generation
 from numpy import random # Added Vishnu for Bernoulli random number generation
+import time
 
 # constants
 CONNECTION_STRING = "dbname='simmobility' user='postgres' host='172.25.184.156' " \
@@ -14,11 +15,14 @@ LUA_FILES_PATH = "SimMobility/scripts/lua/mid/behavior-models/"
 PLUS_LUA_FILES_PATH = "PLUS_PERTURB/" + LUA_FILES_PATH
 MINUS_LUA_FILES_PATH = "MINUS_PERTURB/" + LUA_FILES_PATH
 GRADIENT_LUA_FILES_PATH = "GRADIENT_RUN/" + LUA_FILES_PATH
+GRADIENT2_LUA_FILES_PATH = "GRADIENT_RUN_2/" + LUA_FILES_PATH
 CONFIG_FILES_PATH = "SimMobility/data/"
 PLUS_CONFIG_FILES_PATH = "PLUS_PERTURB/" + CONFIG_FILES_PATH
 MINUS_CONFIG_FILES_PATH = "MINUS_PERTURB/" + CONFIG_FILES_PATH
 GRADIENT_CONFIG_FILES_PATH = "GRADIENT_RUN/" + CONFIG_FILES_PATH
+GRADIENT2_CONFIG_FILES_PATH = "GRADIENT_RUN_2/" + CONFIG_FILES_PATH
 SEGMENT_TABLE = "supply.segment_calib1_gradient"
+SEGMENT_TABLE2 = "supply.segment_calib1_gradient2"
 PLUS_PERTURB_SEG_TABLE = "supply.segment_calib1_plus"
 MINUS_PERTURN_SEG_TABLE = "supply.segment_calib1_minus"
 PERTURBATION = [0.1, 0.1, 0.1, 0.1]     # Percentage perturbation for different parameters types (pre-day/traffic/segment_cap/intersection_cap)
@@ -57,10 +61,7 @@ class MidTermVariablesManager:
             lua_reader = csv.reader(luaVarsFile)
             lua_param_list = list(lua_reader)
             for item in lua_param_list:
-                # lua_variables[filename,varname] = [filename [0] , varname [1] , initialval [2], minval [3], maxval [4], perturb_step [5],
-                # currentval [6], +ve_perturb [7], -ve_perturb [8], weight_for_gradient [9], weight_for_sc [10], weight_for_TT [11],
-                # weight for EZ_link [12],  apriori_value [13], normalized_current_val [14], normalized_+ve_perturb [15], normalized_-ve_perturb [16]
-                # , apriori_weight [17], normalized_apriori_value[18], currentval2 [19], normalized_current_val2 [20] ]
+
                 norm_val = (float(item[2])-float(item[3]))/(float(item[4])-float(item[3]))
                 norm_apriori = (float(item[10])-float(item[3]))/(float(item[4])-float(item[3]))
                 self.lua_variables[(item[0], item[1])] = list([item[0], item[1], float(item[2]), float(item[3]), float(item[4]),
@@ -68,26 +69,13 @@ class MidTermVariablesManager:
                                                          float(item[6]), float(item[7]), float(item[8]), float(item[9]),
                                                          float(item[10]), norm_val, norm_val, norm_val, float(item[11]), norm_apriori, float(item[2]),norm_val])
 
-        #with open('data/pvtrc_variables.csv', 'r') as pvtrcVarsFile:
-        #	pvtrc_reader = csv.reader(pvtrcVarsFile)
-        #	param_list = list(pvtrc_reader)
-        #	for item in param_list:
-                # pvtrc_variables[filename,varname] = [filename, varname, initialval, minval, maxval,
-                # perturb_step, currentval, +ve_perturb, -ve_perturb, weight_for_gradient, weight_for_sc, weight_for_TT]
-        #		self.pvtrc_variables[(item[0], item[1])] = list([item[0], item[1], float(item[2]), float(item[3]), float(item[4]),
-        #													float(item[5]), float(item[2]), float(item[2]), float(item[2]), float(item[6]), float(item[7]), float(item[8])])
+
 
         with open('data/supply_variables.csv', 'r') as supplyVarsFile:
             supply_reader = csv.reader(supplyVarsFile)
             param_list = list(supply_reader)
             for item in param_list:
-                # supply_variables[id] = [filename [0], linkcat [1], beta_initialval [2], beta_minval [3], beta_maxval [4], beta_currentval [5],
-                # +ve_perturb_beta [6], -ve_perturb_beta [7], alpha_initialval [8], alpha_minval [9], alpha_maxval [10],
-                # alpha_currentval [11], +ve_perturb_alpha [12], -ve_perturb_alpha [13], perturb_step [14], weight_for_gradient [15],
-                # weight_for_sc [16], weight_for_TT weight [17], for EZ_link [18], apriori_value_beta [19], apriori_value_alpha [20],
-                # norm_beta_cur [21], norm_beta_+ [22], norm_beta_-[23], norm_alpha_cur[24], norm_alpha_+ [25], norm_alpha_- [26]
-                # , apriori_weight [27], normalized_apriori_value_beta[28], normalized_apriori_value_alpha[29]
-                # , beta_currentval2 [30], norm_beta_cur2 [31], alpha_currentval2 [32], norm_alpha_cur2 [33]]
+
                 norm_val_alpha = (float(item[7])-float(item[8]))/(float(item[9])-float(item[8]))
                 norm_val_beta =  (float(item[3])-float(item[4]))/(float(item[5])-float(item[4]))
                 norm_apriori_alpha = (float(item[13])-float(item[8]))/(float(item[9])-float(item[8]))
@@ -102,10 +90,7 @@ class MidTermVariablesManager:
             dbvar_reader = csv.reader(dbVarsFile)
             db_param_list = list(dbvar_reader)
             for item in db_param_list:
-                # db_variables[capacityid] = [linkcat [0], numlanes [1], speed [2], initialval [3], minval [4], maxval [5],
-                #  perturb_step [6], currentval [7], +ve_perturb [8], -ve_perturb [9], weight_for_gradient [10], weight_for_sc [11],
-                # weight_for_TT [12], weight for EZ_link [13], apriori_value [14], norm_cur [15], norm_+ [16], norm_-[17],
-                # apriori_weight [18], normalized_apriori_value [19], currentval2 [20], norm_cur2 [21]]
+
                 norm_cap = (float(item[5])-float(item[6]))/(float(item[7])-float(item[6]))
                 norm_apriori = (float(item[13])-float(item[6]))/(float(item[7])-float(item[6]))
                 self.db_variables[item[4]] = list([item[1], item[2], item[3], float(item[5]), float(item[6]), float(item[7]), float(item[8]),
@@ -116,10 +101,7 @@ class MidTermVariablesManager:
             segcap_reader = csv.reader(segCapFile)
             segcap_param_list = list(segcap_reader) #list of seg_id,capacity,lower bound,upper bound,c,a,w1,w2
             for item in segcap_param_list:
-                    # segcap_variables[segment_id] = [segment_id [0], initialval [1], minval [2], maxval [3], perturb_step [4],
-                    #    currentval [5], +ve_perturb [6], -ve_perturb [7], weight_for_gradient [8], weight_for_sc [9], weight_for_TT [10],
-                    #    weight for EZ_link [11], apriori_value [12], norm_cur [13], norm_+ [14], norm_- [15],
-                    #    apriori_weight [16], normalized_apriori_value [17], currentval2 [18], norm_cur2 [19] ]
+
                     norm_seg_cap = (float(item[1])-float(item[2]))/(float(item[3])-float(item[2]))
                     norm_apriori = (float(item[9])-float(item[2]))/(float(item[3])-float(item[2]))
                     self.segcap_variables[item[0]] = list([item[0], float(item[1]), float(item[2]), float(item[3]), float(item[4]),
@@ -191,14 +173,6 @@ class MidTermVariablesManager:
                 value[15] = clamp(value[14] + rand_num*c[0], 0, 1)
                 value[16] = clamp(value[14] - rand_num*c[0], 0, 1)
 
-        #for key, value in self.pvtrc_variables.items():
-        #    rand_1 = np.random.binomial(1,0.5,1)
-        #    if rand_1 == 1:
-        #          rand_num = 1
-        #    else:
-        #          rand_num = -1
-        #    value[7] = clamp(value[6] + rand_num*value[5], value[3], value[4]) # Changed Vishnu
-        #    value[8] = clamp(value[6] - rand_num*value[5], value[3], value[4]) # Changed Vishnu
 
         for key, value in self.supply_variables.items():
             rand_1 = np.random.binomial(1,0.5,1)
@@ -292,27 +266,6 @@ class MidTermVariablesManager:
             os.system(sed_command)
 
 
-    # updates calibration variables in xml config files
-    #def update_xml_variables(self, type):
-        # private routechoice variables
-    #	for key, value in self.pvtrc_variables.items():
-    #		filename = GRADIENT_CONFIG_FILES_PATH+value[0]
-
-    #		if type == 1:
-    #			filename = PLUS_CONFIG_FILES_PATH + value[0]
-    #		elif type == 2:
-    #			filename = MINUS_CONFIG_FILES_PATH + value[0]
-
-    #		var_name = value[1]
-    #		current_val = value[6]
-
-    #		if type == 1:
-    #			current_val = value[7]
-    #		elif type == 2:
-    #			current_val = value[8]
-
-    #		sed_command = "sed -i -e 's/<" + var_name + " value=\".*\"/<" + var_name + " value=\"" + repr(current_val) + "\"/g' " + filename
-    #		os.system(sed_command)
 
         # supply variables
         for key, value in self.supply_variables.items():
@@ -340,7 +293,7 @@ class MidTermVariablesManager:
 
             link_cat = value[1]
 
-            sed_command = "sed -i -e 's/<param category=\"" + link_cat + "\" alpha=.* beta=.*\"/<param category=\"" + link_cat + "\" alpha=\"" + repr(alpha_current_val) + "\" beta=\"" + repr(beta_current_val) + "\"/g' " + filename
+            sed_command = "sed -i -e 's/<param category=\"" + link_cat + "\" alpha=.* beta=.*\"/<param category=\"" + link_cat + "\" alpha=\"" + repr(alpha_current_val) + "\" beta=\"" + repr(beta_current_val) + "\"" + "  kmin=\"0.04\" kjam=\"0.2\"" + "/g' " + filename
             os.system(sed_command)
 
     # update db variables
@@ -425,14 +378,6 @@ class MidTermVariablesManager:
             value[7] = clamp(value[6] + rand_num*value[5], value[3], value[4]) # Changed Vishnu
             value[8] = clamp(value[6] - rand_num*value[5], value[3], value[4]) # Changed Vishnu
 
-        #for key, value in self.pvtrc_variables.items():
-        #	rand_1 = np.random.binomial(1,0.5,1)
-        #	if rand_1 == 1:
-        #	  	rand_num = 1
-        #	else:
-        #	  	rand_num = -1
-        #	value[7] = clamp(value[6] + rand_num*value[5], value[3], value[4]) # Changed Vishnu
-        #	value[8] = clamp(value[6] - rand_num*value[5], value[3], value[4]) # Changed Vishnu
 
         for key, value in self.supply_variables.items():
             rand_1 = np.random.binomial(1,0.5,1)
@@ -455,13 +400,14 @@ class MidTermVariablesManager:
                 rand_num = 1
             else:
                 rand_num = -1
-            lower_limit = 0.0
+            '''lower_limit = 0.0
             if re.search('[a-zA-Z]', value[4]) is None:
                 lower_limit = float(value[4])
             else:
                 reference_capacity = self.db_variables[value[4]]
-                lower_limit = float(reference_capacity[7])
+                lower_limit = float(reference_capacity[7])'''
 
+            lower_limit = value[4]
             value[8] = clamp(value[7] + rand_num*value[6], lower_limit, value[5]) # Changed Vishnu
             value[9] = clamp(value[7] - rand_num*value[6], lower_limit, value[5]) # Changed Vishnu
 
@@ -472,8 +418,7 @@ class MidTermVariablesManager:
             else:
                 rand_num = -1
 
-            # segcap_variables[segment_id] = [0-segment_id, 1-initialval, 2-minval, 3-maxval, 4-perturb_step,
-            #                                       5-currentval, 6- +ve_perturb, 7- -ve_perturb, 8-weight_for_gradient, 9-weight_for_sc, 10-weight_for_TT]
+
             value[6] = clamp(value[5] + rand_num*value[4], value[2], value[3])
             value[7] = clamp(value[5] - rand_num*value[4], value[2], value[3])
 
@@ -482,8 +427,7 @@ class MidTermVariablesManager:
         for key, value in self.lua_variables.items():
             plus_params.append(value[7])
 
-        #for key, value in self.pvtrc_variables.items():
-        #	plus_params.append(value[7])
+
 
         for key, value in self.supply_variables.items():
             plus_params.append(value[6])
@@ -502,9 +446,6 @@ class MidTermVariablesManager:
         for key, value in self.lua_variables.items():
             minus_params.append(value[8])
 
-        #for key, value in self.pvtrc_variables.items():
-        #	minus_params.append(value[8])
-
         for key, value in self.supply_variables.items():
             minus_params.append(value[7])
             minus_params.append(value[13])
@@ -517,13 +458,11 @@ class MidTermVariablesManager:
 
         return minus_params
 
+
     def get_actual_variable_vector(self):
         params = []
         for key, value in self.lua_variables.items():
             params.append(value[6])
-
-        #for key, value in self.pvtrc_variables.items():
-        #	params.append(value[6])
 
         for key, value in self.supply_variables.items():
             params.append(value[5])
@@ -545,9 +484,6 @@ class MidTermVariablesManager:
             plus_params.append(value[7])
             apriori_params.append(value[13])
             apriori_weights.append(value[17])
-
-        #for key, value in self.pvtrc_variables.items():
-        #    params.append(value[6])
 
         for key, value in self.supply_variables.items():
             plus_params.append(value[6])
@@ -577,9 +513,6 @@ class MidTermVariablesManager:
             plus_params.append(value[15])
             apriori_params.append(value[18])
             apriori_weights.append(value[17])
-
-        #for key, value in self.pvtrc_variables.items():
-        #    params.append(value[6])
 
         for key, value in self.supply_variables.items():
             plus_params.append(value[22])
@@ -611,9 +544,6 @@ class MidTermVariablesManager:
             apriori_params.append(value[13])
             apriori_weights.append(value[17])
 
-        #for key, value in self.pvtrc_variables.items():
-        #    params.append(value[6])
-
         for key, value in self.supply_variables.items():
             minus_params.append(value[7])
             apriori_params.append(value[19])
@@ -643,8 +573,6 @@ class MidTermVariablesManager:
             apriori_params.append(value[18])
             apriori_weights.append(value[17])
 
-        #for key, value in self.pvtrc_variables.items():
-        #    params.append(value[6])
 
         for key, value in self.supply_variables.items():
             minus_params.append(value[23])
@@ -676,8 +604,6 @@ class MidTermVariablesManager:
             apriori_params.append(value[13])
             apriori_weights.append(value[17])
 
-        #for key, value in self.pvtrc_variables.items():
-        #    params.append(value[6])
 
         for key, value in self.supply_variables.items():
             gradient_params.append(value[5])
@@ -708,8 +634,6 @@ class MidTermVariablesManager:
             apriori_params.append(value[13])
             apriori_weights.append(value[17])
 
-        #for key, value in self.pvtrc_variables.items():
-        #    params.append(value[6])
 
         for key, value in self.supply_variables.items():
             gradient2_params.append(value[30])
@@ -736,8 +660,6 @@ class MidTermVariablesManager:
         for key, value in self.lua_variables.items():
             plus_params.append(value[15])
 
-        #for key, value in self.pvtrc_variables.items():
-        #    plus_params.append(value[7])
 
         for key, value in self.supply_variables.items():
             plus_params.append(value[22])
@@ -756,8 +678,6 @@ class MidTermVariablesManager:
         for key, value in self.lua_variables.items():
             minus_params.append(value[16])
 
-        #for key, value in self.pvtrc_variables.items():
-        #    minus_params.append(value[8])
 
         for key, value in self.supply_variables.items():
             minus_params.append(value[23])
@@ -776,8 +696,6 @@ class MidTermVariablesManager:
         for key, value in self.lua_variables.items():
             params.append(value[14])
 
-        #for key, value in self.pvtrc_variables.items():
-        #    params.append(value[6])
 
         for key, value in self.supply_variables.items():
             params.append(value[21])
@@ -796,8 +714,6 @@ class MidTermVariablesManager:
         for value in self.lua_variables.values():
             weights.append(value[9])
 
-        #for value in self.pvtrc_variables.values():
-        #	weights.append(value[9])
 
         for value in self.supply_variables.values():
             weights.append(value[15])
@@ -810,6 +726,93 @@ class MidTermVariablesManager:
             weights.append(value[8])
 
         return weights
+
+
+    def compute_gradient(self, z_plus, z_minus, length, diff_params, functionCallTime):
+
+        index = 0
+        N_meas = length[0] + length[1] + length[2] + length[3]
+        gradient = []
+        startTime = time.time()
+        zdiff_counts = (sum(z_plus[0:length[0]]) - sum(z_minus[0:length[0]]))
+        zdiff_TT = (sum(z_plus[length[0]:length[1]])-sum(z_minus[length[0]:length[1]]))
+        zdiff_boarding_alighting = (sum(z_plus[length[1]:length[3]]) - sum(z_minus[length[1]:length[3]]))
+
+        for value in self.lua_variables.values():
+            temp_gradient = 0
+            gradient_numerator = 0
+            gradient_numerator += zdiff_counts*value[10]
+            gradient_numerator += zdiff_TT*value[11]
+            gradient_numerator += zdiff_boarding_alighting*value[12]
+            gradient_numerator += z_plus[N_meas+index] - z_minus[N_meas+index]
+            temp_gradient = gradient_numerator/diff_params[index]
+
+
+            gradient.append(temp_gradient)
+            index += 1
+
+        for value in self.supply_variables.values():
+            temp_gradient = 0
+            gradient_numerator = 0
+            gradient_numerator += zdiff_counts*value[16]
+            gradient_numerator += zdiff_TT*value[17]
+            gradient_numerator += zdiff_boarding_alighting*value[18]
+            gradient_numerator += z_plus[N_meas+index] - z_minus[N_meas+index]
+
+
+            temp_gradient = gradient_numerator/diff_params[index]
+
+
+            gradient.append(temp_gradient)
+            index += 1
+
+            temp_gradient = 0
+            gradient_numerator = 0
+            gradient_numerator += zdiff_counts*value[16]
+            gradient_numerator += zdiff_TT*value[17]
+            gradient_numerator += zdiff_boarding_alighting*value[18]
+            gradient_numerator += z_plus[N_meas+index] - z_minus[N_meas+index]
+
+
+            temp_gradient = gradient_numerator/diff_params[index]
+
+
+            gradient.append(temp_gradient)
+            index += 1
+
+        for value in self.db_variables.values():
+            temp_gradient = 0
+            gradient_numerator = 0
+            gradient_numerator += zdiff_counts*value[11]
+            gradient_numerator += zdiff_TT*value[12]
+            gradient_numerator += zdiff_boarding_alighting*value[13]
+            gradient_numerator += z_plus[N_meas+index] - z_minus[N_meas+index]
+
+
+            temp_gradient = gradient_numerator/diff_params[index]
+
+
+            gradient.append(temp_gradient)
+            index += 1
+
+        for value in self.segcap_variables.values():
+            temp_gradient = 0
+            gradient_numerator = 0
+            gradient_numerator += zdiff_counts*value[9]
+            gradient_numerator += zdiff_TT*value[10]
+            gradient_numerator += zdiff_boarding_alighting*value[11]
+            gradient_numerator += z_plus[N_meas+index] - z_minus[N_meas+index]
+
+
+            temp_gradient = gradient_numerator/diff_params[index]
+
+
+            gradient.append(temp_gradient)
+            index += 1
+
+
+        return np.array(gradient)
+
 
     def generate_weight_matrix(self, length_vector):
         index = 0
@@ -891,13 +894,14 @@ class MidTermVariablesManager:
             index += 1
 
         for value in self.db_variables.values():
-            lower_limit = 0.0
+            '''lower_limit = 0.0
             if re.search('[a-zA-Z]', value[4]) is None:
                 lower_limit = float(value[4])
             else:
                 reference_capacity = self.db_variables[value[4]]
-                lower_limit = float(reference_capacity[7])
+                lower_limit = float(reference_capacity[7])'''
 
+            lower_limit = value[4]
             value[7] = clamp(float(params[index]), lower_limit, value[5])
             index += 1
 
@@ -922,13 +926,14 @@ class MidTermVariablesManager:
             index += 1
 
         for value in self.db_variables.values():
-            lower_limit = 0.0
+            '''lower_limit = 0.0
             if re.search('[a-zA-Z]', value[4]) is None:
                 lower_limit = float(value[4])
             else:
                 reference_capacity = self.db_variables[value[4]]
-                lower_limit = float(reference_capacity[7])
+                lower_limit = float(reference_capacity[7])'''
 
+            lower_limit = value[4]
             value[20] = clamp(float(params[index]), lower_limit, value[5])
             index += 1
 
@@ -953,12 +958,12 @@ class MidTermVariablesManager:
             index += 1
 
         for value in self.db_variables.values():
-            lower_limit = 0.0
+            '''lower_limit = 0.0
             if re.search('[a-zA-Z]', value[4]) is None:
                 lower_limit = float(value[4])
             else:
                 reference_capacity = self.db_variables[value[4]]
-                lower_limit = float(reference_capacity[7])
+                lower_limit = float(reference_capacity[7])'''
 
             value[15] = clamp(float(params[index]), 0, 1)
             index += 1
@@ -984,12 +989,12 @@ class MidTermVariablesManager:
             index += 1
 
         for value in self.db_variables.values():
-            lower_limit = 0.0
+            '''lower_limit = 0.0
             if re.search('[a-zA-Z]', value[4]) is None:
                 lower_limit = float(value[4])
             else:
                 reference_capacity = self.db_variables[value[4]]
-                lower_limit = float(reference_capacity[7])
+                lower_limit = float(reference_capacity[7])'''
 
             value[21] = clamp(float(params[index]), 0, 1)
             index += 1
@@ -1122,9 +1127,9 @@ class MTCalibration:
     def __init__(self, iterations):
         self.obj_fn_type = 1
         self.no_of_iterations = iterations
-        self.interval = 30
+        self.interval = 15
         self.start_time = 7
-        self.end_time = 8
+        self.end_time = 21
         self.weights['ScreenLine'] = 0.6
         self.weights['TravelTime'] = 0.2
         self.weights['PT_Boarding'] = 0.1
@@ -1136,5 +1141,5 @@ class MTCalibration:
         # SPSA Parameters
         self.alpha = 0.602
         self.a = 1
-        self.A = 50
+        self.A = 100000
 
